@@ -1,4 +1,4 @@
-# DeepSeek Harness Bridge
+# DSH–Codex Bridge
 
 [中文说明](README.zh-CN.md)
 

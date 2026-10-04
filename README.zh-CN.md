@@ -1,4 +1,4 @@
-# DeepSeek Harness Bridge
+# DSH–Codex Bridge
 
 让 Codex 向正在运行的 DeepSeek Harness 桌面 agent 派发任务，在 DSH 的真实工作区会话中查看实时进度，再由 Codex 回读结果、审查和继续协作。
 
