@@ -24,7 +24,7 @@
 # read this machine's environment instead of hardcoding a path.
 - insert:
     - id: codex-bridge
-      name: 'dsh-codex-bridge'
+      name: '@esroamer/dsh-codex-bridge'
       config:
         prefix: !!js process.env.DSH_CODEX_BRIDGE_PREFIX ?? '/codex-bridge'
         stateDir: !!js process.env.DSH_CODEX_BRIDGE_STATE ?? undefined

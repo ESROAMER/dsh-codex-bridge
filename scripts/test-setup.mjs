@@ -26,6 +26,9 @@ try {
   assert.equal(installed.dependencies.other, '1.0.0');
   assert(installed.dsh.profile.bundles.includes('dsh-codex-bridge'));
   assert((await lstat(join(dirname(profile),'node_modules','dsh-codex-bridge'))).isSymbolicLink());
+  const installedPatch = await readFile(join(dsh,'codex-bridge-install','plugin','cordis.patch.yml'),'utf8');
+  assert.match(installedPatch, /name: 'dsh-codex-bridge'/);
+  assert.doesNotMatch(installedPatch, /name: '@esroamer\/dsh-codex-bridge'/);
   const tokens = JSON.parse(await readFile(join(dsh,'codex-bridge','tokens.json')));
   assert.deepEqual(Object.values(tokens.tokens)[0].workspaceIds, ['one','two']);
   const settings = JSON.parse(await readFile(join(codex,'skills','deepseek-harness','references','local-settings.json')));
