@@ -1,0 +1,14 @@
+node_modules/
+__pycache__/
+*.pyc
+*.token
+.codex-token
+.env
+local-settings.json
+tokens.json
+state.json
+installation.json
+*.bak*
+*.tgz
+*.zip
+test-output/

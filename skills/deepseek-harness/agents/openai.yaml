@@ -1,0 +1,6 @@
+interface:
+  display_name: "DeepSeek Harness 协作"
+  short_description: "Delegate and review tasks in DeepSeek Harness"
+  default_prompt: "使用 $deepseek-harness 把任务派发给 DeepSeek，并跟进执行结果。"
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,31 @@
+# dsh-codex-bridge bundle layer.
+#
+# This row is inserted over the profile root that @deepseek-ai/dsh-base already
+# built, so it composes with the running desktop exactly like any in-box row.
+# Removing this file (or disabling the row from the profile's own
+# cordis.patch.yml, or `dsh plugin --profile desktop remove dsh-codex-bridge`)
+# unloads the bridge; the desktop keeps working unchanged.
+#
+# Every key below is optional. Defaults live in index.js and are listed in
+# README.md:
+#   prefix           route prefix on the desktop's own loopback web server
+#   stateDir         durable bridge state (task bindings + token hashes); the
+#                    directory is created with owner-only permissions
+#   tokenFile        optional plaintext token file, re-read on every request so
+#                    a token can be rotated without touching this file
+#   workspacePaths   explicit allowlist of workspace directories; enforced on
+#                    create, replay, read, and list paths
+#   maxRequestBytes  request body cap
+#   maxWaitMs        longest `POST /tasks/wait` long poll
+#   eventCacheLimit  per-session in-memory event tail used for replay
+#   requestIdTtlMs   how long a completed requestId stays replayable
+#
+# `!!js` expressions are evaluated against the loader context, so the row can
+# read this machine's environment instead of hardcoding a path.
+- insert:
+    - id: codex-bridge
+      name: 'dsh-codex-bridge'
+      config:
+        prefix: !!js process.env.DSH_CODEX_BRIDGE_PREFIX ?? '/codex-bridge'
+        stateDir: !!js process.env.DSH_CODEX_BRIDGE_STATE ?? undefined
+        tokenFile: !!js process.env.DSH_CODEX_BRIDGE_TOKEN_FILE ?? undefined

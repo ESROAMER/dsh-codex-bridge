@@ -1,0 +1,44 @@
+{
+  "name": "dsh-codex-bridge",
+  "version": "0.1.0",
+  "description": "Local loopback collaboration bridge: lets an external client (Codex) discover workspaces, drive desktop-visible DeepSeek Harness sessions, and follow their live execution state.",
+  "type": "module",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "admin.mjs",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE",
+    "PROTOCOL.md",
+    "skills",
+    "scripts",
+    "install.ps1",
+    "README.zh-CN.md"
+  ],
+  "exports": {
+    ".": "./index.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node protocol_test.mjs && node readback_test.mjs && node codex_review_regression.mjs"
+  },
+  "repository": {
+    "url": "git+https://github.com/ESROAMER/deepseek-harness-bridge.git",
+    "type": "git"
+  },
+  "homepage": "https://github.com/ESROAMER/deepseek-harness-bridge#readme",
+  "bugs": {
+    "url": "https://github.com/ESROAMER/deepseek-harness-bridge/issues"
+  }
+}
