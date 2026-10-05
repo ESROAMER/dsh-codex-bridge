@@ -2,6 +2,14 @@
 
 本文档是协议的唯一权威说明，供 Codex 侧实现或审计客户端使用。协议版本：`protocolVersion: 1`。
 
+## 全工作区授权与注册（0.2.0 新增）
+
+令牌 `workspaceIds: null` 表示覆盖全部已注册及未来工作区（仍受部署 `workspacePaths` 限制）。独立字段 `allowWorkspaceCreate: true` 允许注册新工作区，且仅在全工作区范围下生效。旧令牌缺少该字段时不获得创建权限。部署 `allowWorkspaceCreate: false` 可禁用注册。`GET /capabilities` 的 `workspaces.create` 反映当前调用者的实际权限。
+
+`POST /workspaces/create` 请求：`{"requestId":"唯一ID","path":"已存在目录的绝对路径","title":"可选标题"}`。必须使用完整路径，拒绝相对路径、非目录、不存在的路径、范围外路径。此接口不创建目录。成功返回 `value.workspace {workspaceId,title,path}`、`replayed`、`reused`。通过 DSH 原生 registry.create 注册，复用同一个规范路径，不修改已有标题。客户端随后用返回的 workspaceId 创建 task 并 append 指令。
+
+相同调用者、requestId 和规范路径/标题返回持久化回放；相同 ID 改变内容返回 409；注册权限不足/吊销或部署不允许返回 403（先检查权限，再读取回放记录）。重复目录注册不产生新工作区。请求记录与 task 状态一起保存，不包含凭据。
+
 - 基址：`http://127.0.0.1:<desktop port>/codex-bridge`（桌面默认端口 `19387`，前缀可由配置改写）。
 - 认证：每个请求都必须带 `Authorization: Bearer <token>`。缺头 → 401 `auth/missing-token`；未知/已吊销 → 403 `auth/invalid-token`。
 - 传输：HTTP/1.1，JSON 请求与响应；事件流为 `text/event-stream`。

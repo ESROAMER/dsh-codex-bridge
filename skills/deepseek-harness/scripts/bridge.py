@@ -15,7 +15,7 @@ import urllib.request
 DEFAULT_CONFIG = Path(__file__).resolve().parents[1] / 'references' / 'local-settings.json'
 ROUTES = {
     'GET': {'/health', '/workspaces', '/capabilities', '/sessions', '/transcript', '/tasks/get', '/tasks/list'},
-    'POST': {'/tasks/create', '/tasks/append', '/tasks/wait', '/tasks/cancel', '/tasks/close'},
+    'POST': {'/workspaces/create', '/tasks/create', '/tasks/append', '/tasks/wait', '/tasks/cancel', '/tasks/close'},
 }
 
 
@@ -53,7 +53,7 @@ def request(config_path, method, route, query=None, body=None, timeout=40):
         raise ValueError('GET does not accept a JSON body')
     if method == 'POST' and not isinstance(body, dict):
         raise ValueError('POST requires an object in --body-file')
-    if route in ('/tasks/create', '/tasks/append') and not isinstance(body.get('requestId'), str):
+    if route in ('/workspaces/create', '/tasks/create', '/tasks/append') and not isinstance(body.get('requestId'), str):
         raise ValueError('Mutation requires a stable requestId in the saved request body')
     if route == '/tasks/wait' and not 0 <= body.get('waitMs', 25000) <= 30000:
         raise ValueError('Use a bounded waitMs between 0 and 30000')

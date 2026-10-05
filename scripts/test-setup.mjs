@@ -34,7 +34,14 @@ try {
   const settings = JSON.parse(await readFile(join(codex,'skills','deepseek-harness','references','local-settings.json')));
   assert((await readFile(settings.token_file,'utf8')).startsWith('dshb_'));
   run('--configure-only','--workspace','two');
+  run('--configure-only','--all-workspaces','--allow-workspace-create');
+  const wideTokens = JSON.parse(await readFile(join(dsh,'codex-bridge','tokens.json')));
+  assert.equal(Object.values(wideTokens.tokens)[0].workspaceIds, null);
+  assert.equal(Object.values(wideTokens.tokens)[0].allowWorkspaceCreate, true);
   run('--workspace','two');
+  const scopedAgain = Object.values(JSON.parse(await readFile(join(dsh,'codex-bridge','tokens.json'))).tokens)[0];
+  assert.deepEqual(scopedAgain.workspaceIds,['two']);
+  assert.equal(scopedAgain.allowWorkspaceCreate,false);
   run('--uninstall');
   const removed = JSON.parse(await readFile(profile));
   assert.deepEqual(removed.dsh.profile.bundles, ['other']);

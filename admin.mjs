@@ -25,6 +25,8 @@ const TOKEN_PREFIX = 'dshb_'
 const usage = `dsh-codex-bridge admin
 
   token issue  --alias <name> [--workspace <workspaceId>]...   create a scoped token
+               [--allow-workspace-create]                      register existing directories
+                                                              (requires --all-workspaces)
                [--all-workspaces]                              explicitly widen it to every
                                                               workspace the deployment allows
   token list   [--json]                                        list token aliases and scopes
@@ -106,6 +108,9 @@ const issue = async (args) => {
   if (typeof alias !== 'string' || alias === '') return fail('token issue requires --alias <name>')
   const workspaces = args.all('workspace').filter((value) => value !== true)
   const allWorkspaces = args.one('all-workspaces') === true
+  const allowWorkspaceCreate = args.one('allow-workspace-create') === true
+  if (allWorkspaces && workspaces.length) return fail('use --all-workspaces OR --workspace, not both')
+  if (allowWorkspaceCreate && !allWorkspaces) return fail('--allow-workspace-create requires --all-workspaces')
   // Scope is explicit by design: an unnamed scope is not silently widened to
   // every workspace. A separate, spellable flag is required for that.
   if (workspaces.length === 0 && !allWorkspaces) {
@@ -126,6 +131,7 @@ const issue = async (args) => {
     alias,
     hash: hashToken(token),
     workspaceIds: allWorkspaces ? null : workspaces,
+    allowWorkspaceCreate,
     createdAt: new Date().toISOString(),
     source: 'admin-cli',
   }
@@ -143,6 +149,7 @@ const list = async (args) => {
       ? (entry.workspaceIds.length === 0 ? 'none' : entry.workspaceIds)
       : 'all-configured',
     createdAt: entry.createdAt,
+    allowWorkspaceCreate: entry.allowWorkspaceCreate === true,
   }))
   if (args.one('json') === true) {
     process.stdout.write(`${JSON.stringify({ path, tokens: rows }, null, 2)}\n`)

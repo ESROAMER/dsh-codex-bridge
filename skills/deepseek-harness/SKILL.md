@@ -21,6 +21,8 @@ A healthy bridge has `value.bridge: ready`, `protocolVersion: 1`, and `permissio
 
 ## Dispatch and collaborate
 
+All-workspace credentials dynamically cover existing and future registered workspaces. Match the user's project by path/name; prefer the current project directory when that is the clear context, and ask only for ambiguous matches. If registration is requested and no workspace matches, require `capabilities.workspaces.create: true` and POST `/workspaces/create` with a stable requestId, fully qualified existing directory path, and optional title. Use the returned `workspace.workspaceId` for task creation. This registers a workspace, not a directory or dialogue. Creating missing directories requires a separately authorized ordinary file operation. Creation needs all-workspace scope plus the separate `allowWorkspaceCreate` permission; do not widen credentials to bypass a refusal.
+
 Read [references/operations.md](references/operations.md) for request shapes and exact commands. Use JSON request files for substantial prompts, avoiding fragile PowerShell escaping. The helper reads a dedicated bridge credential internally; never print it or copy it into requests, documentation, or command arguments.
 
 - Create a task with an explicit `workspaceId`, unique `taskId`, and stable `requestId`. For an existing dialogue, also provide its `sessionId`. **Create binds a task; it does not submit the objective to the agent.** Submit work using `/tasks/append`.

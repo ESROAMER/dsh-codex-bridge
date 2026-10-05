@@ -15,9 +15,9 @@
 
 import { createHash, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto'
 import { existsSync } from 'node:fs'
-import { chmod, mkdir, readFile, rename, writeFile } from 'node:fs/promises'
+import { chmod, mkdir, readFile, rename, writeFile, realpath, stat } from 'node:fs/promises'
 import { homedir } from 'node:os'
-import { dirname, join } from 'node:path'
+import { dirname, join, isAbsolute, parse } from 'node:path'
 
 export const name = 'dsh-codex-bridge'
 
@@ -499,7 +499,7 @@ export function apply(ctx, config = {}) {
     if (Array.isArray(matched.workspaceIds)) {
       allowed = new Set(matched.workspaceIds.filter((id) => typeof id === 'string' && id !== ''))
     }
-    return { clientId: asString(matched.alias) ?? 'client', allowedWorkspaceIds: allowed }
+    return { clientId: asString(matched.alias) ?? 'client', allowedWorkspaceIds: allowed, allowWorkspaceCreate: matched.allowWorkspaceCreate === true }
   }
 
   /**
@@ -962,7 +962,44 @@ export function apply(ctx, config = {}) {
 
   /* ── operation handlers ────────────────────────────────────────────── */
 
-  const capabilities = async () => {
+  const canCreateWorkspace = (client) => config.allowWorkspaceCreate !== false && typeof ctx.workspaceRegistry.create === 'function' && client.allowedWorkspaceIds === null && client.allowWorkspaceCreate === true
+
+  const createWorkspace = async (client, body) => {
+    if (!canCreateWorkspace(client)) throw fail('auth/workspace-forbidden', 'workspace creation requires an all-workspaces credential with allowWorkspaceCreate enabled')
+    const requestId = requireRequestId(body.requestId)
+    const path = requireString(body.path, 'path')
+    if (!isAbsolute(path) || (process.platform === 'win32' && ['\\', '/'].includes(parse(path).root))) throw fail('request/bad-request', 'path must be a fully qualified existing directory')
+    if (body.createDirectory === true) throw fail('request/bad-request', 'directory creation is not supported; create the directory explicitly first')
+    const title = body.title === undefined ? undefined : requireString(body.title, 'title')
+    let canonical
+    try {
+      canonical = await realpath(path)
+      if (!(await stat(canonical)).isDirectory()) throw new Error('not a directory')
+    } catch {
+      throw fail('request/bad-request', 'path must reference an existing directory')
+    }
+    if (workspacePaths !== undefined && !workspacePaths.includes(canonical)) throw fail('auth/workspace-forbidden', 'path is outside the deployment workspace allowlist')
+    // Serialize and persist idempotency with task state; registry.create also
+    // reuses canonical paths if host creation succeeds before a client disconnect.
+    return stateStore.update(async current => {
+      current.workspaceRequests ??= {}
+      const key = JSON.stringify([client.clientId, requestId])
+      const fingerprint = JSON.stringify([canonical, title ?? null])
+      const prior = current.workspaceRequests[key]
+      if (prior && prior.fingerprint !== fingerprint) throw fail('request/conflict', 'requestId already belongs to a different workspace request')
+      if (prior) {
+        const workspace = resolveWorkspace(client, prior.workspaceId)
+        return {workspace: {workspaceId: workspace.id, title: workspace.title, path: workspace.path}, replayed: true, reused: true}
+      }
+      const existed = ctx.workspaceRegistry.list().some(w => w.path === canonical)
+      const workspace = await ctx.workspaceRegistry.create(canonical, title)
+      resolveWorkspace(client, workspace.id)
+      current.workspaceRequests[key] = {fingerprint, workspaceId: workspace.id}
+      return {workspace: {workspaceId: workspace.id, title: workspace.title, path: workspace.path}, replayed: false, reused: existed}
+    })
+  }
+
+  const capabilities = async (client) => {
     const presets = ctx.get('agentPresets')
     let presetList = []
     let presetError
@@ -985,7 +1022,7 @@ export function apply(ctx, config = {}) {
       protocolVersion: PROTOCOL_VERSION,
       routePrefix: prefix,
       capabilities: {
-        workspaces: { list: true, create: Boolean(asObject(config)?.allowWorkspaceCreate) },
+        workspaces: { list: true, create: canCreateWorkspace(client), createDirectory: false, scope: client.allowedWorkspaceIds === null ? 'all-configured' : 'selected' },
         sessions: { create: true, adopt: true, rename: true, list: true, cancel: true },
         models: { catalog: catalogError === undefined, select: true, verifyObserved: true },
         presets: { list: presetError === undefined, select: true },
@@ -1571,7 +1608,8 @@ export function apply(ctx, config = {}) {
       permissions: { autoApprove: false },
     }),
     'GET /workspaces': async (client) => listWorkspaces(client),
-    'GET /capabilities': async () => capabilities(),
+    'GET /capabilities': async (client) => capabilities(client),
+    'POST /workspaces/create': async (client, body) => createWorkspace(client, body),
     'GET /sessions': async (client, _body, _req, query, signal) => listSessions(client, query, signal),
     'GET /transcript': async (client, _body, _req, query, signal) => readSessionHistory(client, query, signal),
     'POST /tasks/create': async (client, body) => createTask(client, body),

@@ -15,6 +15,8 @@
 #                    a token can be rotated without touching this file
 #   workspacePaths   explicit allowlist of workspace directories; enforced on
 #                    create, replay, read, and list paths
+#   allowWorkspaceCreate  false disables workspace registration even for tokens
+#                         with the explicit allowWorkspaceCreate permission
 #   maxRequestBytes  request body cap
 #   maxWaitMs        longest `POST /tasks/wait` long poll
 #   eventCacheLimit  per-session in-memory event tail used for replay

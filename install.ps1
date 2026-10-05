@@ -7,6 +7,8 @@ param(
     [string]$NodePath,
     [string]$PythonPath,
     [string[]]$WorkspaceId,
+    [switch]$AllWorkspaces,
+    [switch]$AllowWorkspaceCreate,
     [string]$BridgeUrl = 'http://127.0.0.1:19387/codex-bridge',
     [switch]$ConfigureOnly,
     [switch]$Uninstall,
@@ -45,14 +47,21 @@ else {
         $active = Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -like '*DeepSeek*Harness*' }
         if ($active) { throw 'Fully quit DeepSeek Harness first (including its tray process), then rerun. No running tasks will be killed.' }
     }
-    if (-not $WorkspaceId) {
+    if ($AllWorkspaces -and $WorkspaceId) { throw 'Use -AllWorkspaces OR -WorkspaceId, not both.' }
+    if (-not $WorkspaceId -and -not $AllWorkspaces) {
         Write-Host 'Registered workspaces:'
         & $NodePath (Join-Path $repo 'scripts\setup.mjs') --dsh-home $DshHome --list
         if ($LASTEXITCODE -ne 0) { throw 'Cannot read registered workspaces. Open DSH once and add a workspace first.' }
-        $selection = Read-Host 'Enter workspace ID(s), comma separated'
-        $WorkspaceId = @($selection -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+        $selection = Read-Host 'Enter workspace ID(s), comma separated, or ALL for existing and future workspaces'
+        if ($selection.Trim() -eq 'ALL') {
+            $AllWorkspaces = $true
+            if (-not $AllowWorkspaceCreate) { $AllowWorkspaceCreate = (Read-Host 'Allow registering new workspaces at existing directories? [y/N]') -eq 'y' }
+        } else { $WorkspaceId = @($selection -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ }) }
     }
-    if (-not $WorkspaceId) { throw 'At least one explicit workspace ID is required.' }
+    if (-not $WorkspaceId -and -not $AllWorkspaces) { throw 'Select workspace IDs or -AllWorkspaces.' }
+    if ($AllowWorkspaceCreate -and -not $AllWorkspaces) { throw '-AllowWorkspaceCreate requires -AllWorkspaces.' }
+    if ($AllWorkspaces) { $argsList += '--all-workspaces' }
+    if ($AllowWorkspaceCreate) { $argsList += '--allow-workspace-create' }
     foreach ($id in $WorkspaceId) { $argsList += @('--workspace', $id) }
     if ($ConfigureOnly) { $argsList += '--configure-only' }
 }

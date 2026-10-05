@@ -91,8 +91,12 @@ async function install() {
   const base = option('--url', 'http://127.0.0.1:19387/codex-bridge').replace(/\/$/, '');
   validateUrl(base);
   const selected = [...new Set(values('--workspace'))];
+  const allWorkspaces = has('--all-workspaces');
+  const allowWorkspaceCreate = has('--allow-workspace-create');
   const known = await workspaces();
-  if (!selected.length || selected.some(id => !known.some(w => w.id === id))) throw Error('Select at least one existing registered workspace ID.');
+  if (allWorkspaces && selected.length) throw Error('Choose all workspaces OR explicit workspace IDs.');
+  if (allowWorkspaceCreate && !allWorkspaces) throw Error('Workspace creation requires --all-workspaces.');
+  if ((!allWorkspaces && !selected.length) || selected.some(id => !known.some(w => w.id === id))) throw Error('Select registered workspace IDs or --all-workspaces.');
   const profile = await json(profileFile);
   if (!Array.isArray(profile.dsh?.profile?.bundles)) throw Error('Desktop profile not initialized. Start DSH once first.');
   if (process.env.DSH_CODEX_BRIDGE_STATE || process.env.DSH_CODEX_BRIDGE_TOKEN_FILE) throw Error('Custom bridge state/token environment detected. Configure manually to avoid a conflicting deployment.');
@@ -114,7 +118,7 @@ async function install() {
   const alias = previous?.tokenAlias ?? 'codex-installer-' + randomUUID();
   const token = 'dshb_' + randomBytes(32).toString('base64url');
   tokens.tokens ??= {};
-  tokens.tokens[alias] = {alias, hash: hash(token), workspaceIds: selected, createdAt: new Date().toISOString(), source: 'installer'};
+  tokens.tokens[alias] = {alias, hash: hash(token), workspaceIds: allWorkspaces ? null : selected, allowWorkspaceCreate, createdAt: new Date().toISOString(), source: 'installer'};
   const tokenFile = join(stateDir, alias + '.token');
   const installationId = previous?.installationId ?? randomUUID();
   const linkSpec = 'link:' + pluginDir.replaceAll('\\', '/');
@@ -158,7 +162,8 @@ async function install() {
     throw e;
   }
   console.log('Installed/configured. Credential saved locally; its value is not printed.');
-  console.log('Authorized workspaces:', selected.join(', '));
+  console.log('Authorized workspaces:', allWorkspaces ? 'ALL existing and future workspaces (subject to deployment allowlist)' : selected.join(', '));
+  console.log('Workspace creation:', allowWorkspaceCreate ? 'enabled' : 'disabled');
   console.log('Codex skill:', skillDir);
   console.log('Backups:', backupDir);
   console.log('Open/restart DSH, start a new Codex chat, then run install.ps1 -Check.');

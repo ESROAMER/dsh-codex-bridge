@@ -6,6 +6,18 @@ In the commands below, replace `<python>` and `<bridge.py>` with absolute paths 
 
 ## Create or adopt
 
+First GET `/workspaces` and match the user's project. All-workspace scope dynamically includes future registrations, subject to the deployment allowlist. If creation is requested and `/capabilities` reports `workspaces.create: true`, save this request:
+
+```json
+{"requestId":"workspace-<uuid>","path":"C:\\Projects\\example","title":"example"}
+```
+
+```powershell
+& '<python>' '<bridge.py>' POST /workspaces/create --body-file workspace.json
+```
+
+Use `value.workspace.workspaceId` below. The path must be an existing fully qualified directory. The host reuses canonical paths without retitling. Same requestId/body replays durably; changed bodies conflict. This endpoint creates no folders or conversations. Selected-workspace credentials and old all-workspace tokens without creation permission are refused.
+
 Save a create request. Generate real unique IDs; preserve them for retries:
 
 ```json
