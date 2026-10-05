@@ -1,5 +1,5 @@
 /**
- * Offline protocol test for dsh-codex-bridge.
+ * Offline protocol test for Codex–DSH Collaboration.
  *
  * It mounts the real plugin into an in-process fake Cordis context that
  * implements only the Host services the bridge consumes, then drives the real

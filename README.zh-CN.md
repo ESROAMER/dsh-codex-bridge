@@ -1,12 +1,14 @@
-# DSH–Codex Bridge
+# Codex–DSH 协作插件
 
 [English](README.md)
 
-连接 Codex 与正在运行的 DeepSeek Harness（DSH）桌面会话，让 Codex 可以派发任务并查看对话和执行结果。本项目由社区维护，与 DeepSeek、OpenAI 无关。
+让 Codex 向 DeepSeek Harness（DSH）工作区派发任务、跟踪执行、回读结果并继续协作。
+
+npm 包名为 `@esroamer/codex-dsh-collab`。交互由 Codex 发起；DSH 不会主动唤醒空闲的 Codex 会话。
 
 ## 安装
 
-1. 在 DSH 中打开 **设置 → 插件 → 添加插件**，输入 `https://github.com/ESROAMER/dsh-codex-bridge` 或本地解压目录。全部工作区和注册功能需要 **0.2.0 或更高**；npm 的 `@esroamer/dsh-codex-bridge` 发布到该版本后也可使用包名安装。
+1. 在 DSH 中打开 **设置 → 插件 → 添加插件**，输入 GitHub 仓库地址 `https://github.com/ESROAMER/codex-dsh-collab`、本地目录或 npm 包名 `@esroamer/codex-dsh-collab`。全部工作区和工作区注册功能需要 **0.2.0 或更高**。
 2. 下载或克隆本仓库，在仓库根目录运行：
 
    ```powershell
@@ -28,7 +30,7 @@
 .\install.ps1 -ConfigureOnly -AllWorkspaces -AllowWorkspaceCreate
 ```
 
-之后可以说：“让 DeepSeek 在 `C:\Projects\example` 完成任务，没有对应工作区就创建。”路径必须是已存在的目录。注册会复用同路径的已有工作区，不隐式创建文件夹。只想访问全部工作区时省略 `-AllowWorkspaceCreate`。旧令牌不会自动获得创建权限，部署层目录允许列表仍然生效。
+启用工作区注册权限后，在 Codex 中说明项目路径和任务即可。若 DSH 尚未登记该路径，Codex 会将这个已存在的目录注册为工作区；若同路径工作区已存在，则直接复用，不会新建文件夹。
 
 如需由脚本管理插件安装，请先完全退出 DSH，再在仓库根目录运行 `install.ps1`（不加 `-ConfigureOnly`）。
 

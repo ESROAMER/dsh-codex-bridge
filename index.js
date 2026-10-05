@@ -1,6 +1,6 @@
 /**
- * dsh-codex-bridge — the Cordis host half of the Codex ⇄ DeepSeek Harness
- * collaboration bridge.
+ * Codex ↔ DSH Collaboration — the Cordis host half of the workspace-aware
+ * task collaboration plugin.
  *
  * The plugin mounts one loopback HTTP route on the running desktop web server
  * and re-exposes the *existing* Harness services (`workspaceRegistry`,
@@ -19,6 +19,7 @@ import { chmod, mkdir, readFile, rename, writeFile, realpath, stat } from 'node:
 import { homedir } from 'node:os'
 import { dirname, join, isAbsolute, parse } from 'node:path'
 
+// Keep the host module name stable so existing DSH profile registrations can upgrade in place.
 export const name = 'dsh-codex-bridge'
 
 /** Every service `apply` reads; the loader waits for all of them. */

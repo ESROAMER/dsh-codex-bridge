@@ -1,7 +1,8 @@
 {
-  "name": "@esroamer/dsh-codex-bridge",
+  "name": "@esroamer/codex-dsh-collab",
+  "displayName": "Codex ↔ DSH Collaboration",
   "version": "0.2.0",
-  "description": "Local loopback collaboration bridge: lets an external client (Codex) discover workspaces, drive desktop-visible DeepSeek Harness sessions, and follow their live execution state.",
+  "description": "Workspace-aware collaboration: Codex delegates tasks to DeepSeek Harness, follows execution, reads results, and continues the work.",
   "type": "module",
   "main": "index.js",
   "files": [
@@ -33,7 +34,8 @@
     "deepseek-harness",
     "dsh-plugin",
     "codex",
-    "bridge"
+    "collaboration",
+    "workspace"
   ],
   "license": "MIT",
   "engines": {
@@ -43,11 +45,11 @@
     "test": "node protocol_test.mjs && node readback_test.mjs && node codex_review_regression.mjs && node workspace_test.mjs && node scripts/test-setup.mjs"
   },
   "repository": {
-    "url": "git+https://github.com/ESROAMER/dsh-codex-bridge.git",
+    "url": "git+https://github.com/ESROAMER/codex-dsh-collab.git",
     "type": "git"
   },
-  "homepage": "https://github.com/ESROAMER/dsh-codex-bridge#readme",
+  "homepage": "https://github.com/ESROAMER/codex-dsh-collab#readme",
   "bugs": {
-    "url": "https://github.com/ESROAMER/dsh-codex-bridge/issues"
+    "url": "https://github.com/ESROAMER/codex-dsh-collab/issues"
   }
 }

@@ -24,7 +24,8 @@ const skillDir = join(codex, 'skills', 'deepseek-harness');
 const profileFile = join(dsh, 'profiles', 'desktop', 'package.json');
 const linkPath = join(dirname(profileFile), 'node_modules', 'dsh-codex-bridge');
 const manifestFile = join(installDir, 'installation.json');
-const pluginBundleNames = new Set(['dsh-codex-bridge', '@esroamer/dsh-codex-bridge']);
+// Keep the local module/bundle key stable and recognize the legacy and renamed npm packages.
+const pluginBundleNames = new Set(['dsh-codex-bridge', '@esroamer/dsh-codex-bridge', '@esroamer/codex-dsh-collab']);
 const hash = text => createHash('sha256').update(text).digest('hex');
 const json = async (path, fallback) => {
   try { return JSON.parse((await readFile(path, 'utf8')).replace(/^\uFEFF/, '')); }
@@ -132,7 +133,7 @@ async function install() {
       // Explicit state path allows custom DSH homes without changing process-wide environment.
       let patch = await readFile(join(pluginDir, 'cordis.patch.yml'), 'utf8');
       patch = patch.replace('stateDir: !!js process.env.DSH_CODEX_BRIDGE_STATE ?? undefined', 'stateDir: ' + JSON.stringify(stateDir));
-      patch = patch.replace("name: '@esroamer/dsh-codex-bridge'", "name: 'dsh-codex-bridge'");
+      patch = patch.replace("name: '@esroamer/codex-dsh-collab'", "name: 'dsh-codex-bridge'");
       await writeFile(join(pluginDir, 'cordis.patch.yml'), patch);
       await mkdir(dirname(linkPath), {recursive: true});
       if (await exists(linkPath)) {

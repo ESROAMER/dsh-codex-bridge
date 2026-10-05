@@ -1,4 +1,5 @@
-# dsh-codex-bridge bundle layer.
+# Codex–DSH Collaboration bundle layer.
+# The internal bundle id remains stable for existing DSH profiles.
 #
 # This row is inserted over the profile root that @deepseek-ai/dsh-base already
 # built, so it composes with the running desktop exactly like any in-box row.
@@ -26,7 +27,7 @@
 # read this machine's environment instead of hardcoding a path.
 - insert:
     - id: codex-bridge
-      name: '@esroamer/dsh-codex-bridge'
+      name: '@esroamer/codex-dsh-collab'
       config:
         prefix: !!js process.env.DSH_CODEX_BRIDGE_PREFIX ?? '/codex-bridge'
         stateDir: !!js process.env.DSH_CODEX_BRIDGE_STATE ?? undefined

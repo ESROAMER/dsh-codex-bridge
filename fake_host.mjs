@@ -1,5 +1,5 @@
 /**
- * In-process stand-in for the parts of the Host that dsh-codex-bridge consumes.
+ * In-process stand-in for the Host services consumed by Codex–DSH Collaboration.
  *
  * Shared by `protocol_test.mjs` and `client_smoke_test.mjs`. It is deliberately
  * small and deterministic: it records what the bridge asked of the Host, and it

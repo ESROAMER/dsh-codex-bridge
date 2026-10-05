@@ -1,4 +1,4 @@
-# 接口与事件协议（dsh-codex-bridge v1）
+# 接口与事件协议（Codex ↔ DSH Collaboration v1）
 
 本文档是协议的唯一权威说明，供 Codex 侧实现或审计客户端使用。协议版本：`protocolVersion: 1`。
 

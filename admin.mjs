@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * dsh-codex-bridge admin CLI — offline credential and scope management.
+ * Codex–DSH Collaboration admin CLI — offline credential and scope management.
  *
  * The bridge itself stores only token *hashes*; this tool is the only place a
  * plaintext token exists, and it prints it exactly once. It never reads the
@@ -22,7 +22,7 @@ import { dirname, join, resolve } from 'node:path'
 
 const TOKEN_PREFIX = 'dshb_'
 
-const usage = `dsh-codex-bridge admin
+const usage = `codex-dsh-collab admin
 
   token issue  --alias <name> [--workspace <workspaceId>]...   create a scoped token
                [--allow-workspace-create]                      register existing directories
@@ -42,8 +42,8 @@ Scope:
   issue one token per workspace. scope "none" authorizes nothing at all.
 
 Environment:
-  DSH_CODEX_BRIDGE_STATE          state directory (default: ~/.dsh/codex-bridge)
-  DSH_CODEX_BRIDGE_TOKEN_FILE     plaintext token file the bridge re-reads per request
+  DSH_CODEX_BRIDGE_STATE          compatibility setting for the state directory (default: ~/.dsh/codex-bridge)
+  DSH_CODEX_BRIDGE_TOKEN_FILE     compatibility setting for the token file re-read per request
 `
 
 const parseArgs = (argv) => {
@@ -215,7 +215,7 @@ const doctor = async () => {
     }
   }
   process.stdout.write('bridge HTTP surface: prefix /codex-bridge on the running desktop web server (default port 19387)\n')
-  process.stdout.write('note: the bridge loads only when the desktop profile mounts the dsh-codex-bridge bundle\n')
+  process.stdout.write('note: the bridge loads when the desktop profile mounts the stable dsh-codex-bridge runtime bundle\n')
 }
 
 const main = async () => {
