@@ -6,6 +6,8 @@
 
 npm 包名为 `@esroamer/codex-dsh-collab`。交互由 Codex 发起；DSH 不会主动唤醒空闲的 Codex 会话。
 
+底层提供与客户端无关的本机认证 HTTP 协议。其他 agent 软件可按 [PROTOCOL.md](PROTOCOL.md) 实现工作区发现、任务派发、执行等待与消息回读来接入。目前项目附带并验证的是配套 skill 提供的 Codex 客户端；其他软件仍需自行适配和测试。在 DSH 中安装插件后，还需完成下方的 Codex 客户端配置步骤。
+
 ## 安装
 
 1. 在 DSH 中打开 **设置 → 插件 → 添加插件**，输入 GitHub 仓库地址 `https://github.com/ESROAMER/codex-dsh-collab`、本地目录或 npm 包名 `@esroamer/codex-dsh-collab`。全部工作区和工作区注册功能需要 **0.2.0 或更高**。

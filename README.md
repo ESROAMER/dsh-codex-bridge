@@ -6,6 +6,8 @@ Lets Codex delegate tasks to DeepSeek Harness (DSH) workspaces, follow execution
 
 The npm package is `@esroamer/codex-dsh-collab`. Codex initiates each interaction; DSH does not wake an idle Codex session.
 
+The underlying authenticated loopback HTTP protocol is client-independent. Other agent applications can integrate by implementing workspace discovery, task dispatch, execution waits, and transcript reads described in [PROTOCOL.md](PROTOCOL.md). This project currently ships and has verified a Codex client through the companion skill; other applications require their own adaptation and testing. Installing the DSH plugin alone does not configure the Codex client—complete both installation steps below.
+
 ## Install
 
 1. In DSH, open **Settings → Plugins → Add plugin** and enter `https://github.com/ESROAMER/codex-dsh-collab`, a local checkout, or `@esroamer/codex-dsh-collab`. All-workspace setup and workspace registration require **0.2.0+**.
