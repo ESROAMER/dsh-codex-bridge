@@ -36,6 +36,10 @@ npm 包名为 `@esroamer/codex-dsh-collab`。交互由 Codex 发起；DSH 不会
 
 如需由脚本管理插件安装，请先完全退出 DSH，再在仓库根目录运行 `install.ps1`（不加 `-ConfigureOnly`）。
 
+## Windows 终端故障排查
+
+如果桥接连接正常，但 DSH 的 `pwsh` 无输出并返回 `3221225794`（`0xC0000142`），请查阅 [Windows shell 启动案例](skills/deepseek-harness/references/windows-shell-startup.md)。已验证的一台安装中，`workspace-write` 受限令牌与父进程没有控制台的组合触发启动失败；由 ACL runner 预先建立隐藏控制台后成功。文档区分了已观测的触发条件与默认 DACL 机制推断，并说明保留沙箱限制的修复和验收方式。这属于 DSH 运行时问题，桥接安装脚本不会自动修改桌面安装包。
+
 ## 环境与安全
 
 - 需要 Windows、DSH Desktop 和 Codex。

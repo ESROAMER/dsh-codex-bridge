@@ -36,6 +36,8 @@ Read [references/operations.md](references/operations.md) for request shapes and
 
 ## Reliability and limits
 
+For Windows shell failures with exit `3221225794` (`0xC0000142`), read [references/windows-shell-startup.md](references/windows-shell-startup.md). A healthy bridge does not prove shell startup works. The reference records a verified DSH runner/console interaction, its diagnostic boundary, and a repair that preserves confinement; the exit code alone does not establish that cause.
+
 Reuse the **same saved requestId and body** after an uncertain create/append response; never retry by generating a new ID. First inspect task status/history when the outcome is unknown. Stop retrying on authorization/configuration errors and resolve the stated issue. Requests can be replayed; deduplicate processed events by `(sessionId, sessionSeq)`. For paged transcripts, advance to the largest returned item's `sessionSeq`, not blindly to the session's latest `cursor`, or intermediate history can be skipped.
 
 Use the desktop host exclusively for desktop-visible collaboration. Do not start a separate ACP process, use DevTools pasting, extract browser cookies/account secrets, or kill the Desktop to complete routine work. If the host is unavailable, report it and ask the user to open/reopen it when necessary; restart only after an actual module change or diagnosed startup issue.

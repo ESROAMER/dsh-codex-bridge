@@ -36,6 +36,10 @@ With workspace registration enabled, give Codex the project path and task. Codex
 
 For a script-managed installation, fully exit DSH and run `install.ps1` without `-ConfigureOnly` from the repository root.
 
+## Windows shell troubleshooting
+
+If the bridge is healthy but DSH `pwsh` returns `3221225794` (`0xC0000142`) without output, see the [Windows shell startup case](skills/deepseek-harness/references/windows-shell-startup.md). On one verified installation, `workspace-write` restricted-token startup failed without a parent console and succeeded after the ACL runner prepared a hidden console. The guide separates observed behavior from the inferred DACL mechanism and describes validation while preserving confinement. This is a DSH runtime issue; the bridge installer does not automatically patch the desktop installation.
+
 ## Requirements and security
 
 - Windows, DSH Desktop, and Codex.

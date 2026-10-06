@@ -1,0 +1,4 @@
+**/__pycache__/**
+**/*.pyc
+references/local-settings.json
+**/*.token
